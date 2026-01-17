@@ -2,6 +2,7 @@
 
 import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface WalletCardProps {
     name: string;
@@ -20,6 +21,11 @@ export default function WalletCard({
 }: WalletCardProps) {
     const [showPrivate, setShowPrivate] = useState(false);
 
+    const handleCopy = (str : string) => {
+        window.navigator.clipboard.writeText(str)
+        toast("Copied to clipboard")
+    }
+
     return (
         <div key={publicKey} className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
             {/* Header */}
@@ -34,7 +40,7 @@ export default function WalletCard({
             <div className="rounded-xl bg-[#141414] p-5">
                 {/* Public Key */}
                 <p className=" text-white/60 mb-1">Public Key</p>
-                <p className="text-white text-sm break-all">
+                <p className="text-white text-sm break-all cursor-pointer" onClick={() => handleCopy(publicKey)} onSelect={() => handleCopy(publicKey)} >
                     {publicKey}
                 </p>
 
@@ -43,10 +49,10 @@ export default function WalletCard({
                     <p className="text-sm text-white/60 mb-2">Private Key</p>
 
                     <div className="flex items-center gap-3">
-                        <div className="flex-1 text-white tracking-widest cursor-pointer" onClick={() => window.navigator.clipboard.writeText(privateKey)}>
+                        <div className="flex-1 text-white tracking-widest text-sm cursor-pointer" onClick={() => handleCopy(privateKey)} onSelect={() => handleCopy(privateKey)}>
                             {showPrivate
                                 ? collapsed ? privateKey.slice(0, 32) + "....." : privateKey
-                                : "• • • • • • • • • • • • • • • • • • • • •"}
+                                : "• • • • • • • • • • • • • • • • • • • • • • • • • • • • • • • •"}
                         </div>
 
                         <button

@@ -1,15 +1,15 @@
 "use client"
 import { Keypair } from '@solana/web3.js'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import bs58 from "bs58";
 import WalletCard from './WalletCard';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
 import AddWallet from './AddWallet';
-import { Grid, Rows } from 'lucide-react';
 import * as bip39 from "bip39";
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
+import { toast } from 'sonner';
+import { BiCopy } from 'react-icons/bi';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 type WalletType = {
     id: string,
@@ -21,10 +21,10 @@ type WalletType = {
 const Wallet = () => {
 
     const [mnemonics, setMnemonics] = useState<string[]>(Array(12).fill(""))
-    const [mnemonicsInput, setMnemonicsInput] = useState("")
+    const [mnemonicsInput, setMnemonicsInput] = useState<string>("")
     const [wallets, setWallets] = useState<WalletType[]>([])
-    const [collapsed, setCollapsed] = useState(true);
-
+    const [collapsed, setCollapsed] = useState<boolean>(true);
+    const [showMnemonics, setShowMnemonics] = useState<boolean>(false)
 
     useEffect(() => {
         const storedWallets = localStorage.getItem("wallets");
@@ -37,9 +37,11 @@ const Wallet = () => {
     }, []);
 
 
-    const handleDelete = (id) => {
+    const handleDelete = (id: string) => {
         const newWallet = wallets.filter((w) => w.id != id)
         setWallets(newWallet)
+        localStorage.setItem("wallets", JSON.stringify(newWallet));
+        toast("Wallet deleted successfully")
     }
 
     const handleClearWallets = () => {
@@ -47,6 +49,7 @@ const Wallet = () => {
         localStorage.removeItem("mnemonics");
         setWallets([]);
         setMnemonics([]);
+        toast("All wallet cleared")
     };
 
     const generateWalletFromMnemonics = (mnemonics: string, accountIndex: number) => {
@@ -81,17 +84,14 @@ const Wallet = () => {
 
         if (mnemonics) {
             if (!bip39.validateMnemonic(mnemonics)) {
+                toast.error("Invalid mnemonics please try again")
                 console.log("invalid mnemonics please try again");
                 return
             }
         } else {
             mnemonics = bip39.generateMnemonic()
         }
-
-        console.log(mnemonics);
-
         const words = mnemonics.split(" ")
-        console.log(words);
         setMnemonics(words)
 
         const wallet = generateWalletFromMnemonics(mnemonics, wallets.length);
@@ -100,6 +100,7 @@ const Wallet = () => {
             setWallets(updatedWallet)
             localStorage.setItem("wallets", JSON.stringify(updatedWallet));
             localStorage.setItem("mnemonics", JSON.stringify(words));
+            toast("Wallet generated successfully")
         }
 
     }
@@ -107,7 +108,7 @@ const Wallet = () => {
     // to add more wallet form mnemonics
     const addWallet = () => {
         if (!mnemonics) {
-            console.log("No mnemonics founds. Please generate wallet first");
+            toast.error("No mnemonics founds. Please generate wallet first");
             return
         }
 
@@ -116,13 +117,38 @@ const Wallet = () => {
             const updatedWallet = [...wallets, wallet];
             setWallets(updatedWallet)
             localStorage.setItem("wallets", JSON.stringify(updatedWallet));
+            toast("Wallet generated successfully")
         }
+    }
+
+    const copyMnemonics = (str : string) => {
+        window.navigator.clipboard.writeText(str)
+        toast("Copied to clipboard")
     }
 
     return (
         <div className='px-3 my-10'>
             {wallets.length > 0 ?
                 <div>
+                    {/* mnemonics */}
+                    <div className='border border-gray-200/20 p-5 rounded-xl mb-10 cursor-pointer' >
+                        <div className='flex items-center justify-between' onClick={() => setShowMnemonics(!showMnemonics)}>
+                            <h1 className='text-2xl font-extrabold'>Your Secret Phrase</h1>
+                            <button className='p-2 rounded-lg hover:bg-[#141414] cursor-pointer' >{showMnemonics ? <IoIosArrowUp /> : <IoIosArrowDown />}</button>
+                        </div>
+                        {showMnemonics && <div onClick={() => 
+                            copyMnemonics(mnemonics.join(" "))}>
+                            <div className='grid grid-cols-4 gap-3 mt-5'>
+                                {mnemonics.map((word) =>
+                                    <div key={word} className='bg-[#222222] p-4 rounded hover:bg-[#2f2e2e]'>
+                                        <p>{word}</p>
+                                    </div>
+                                )}
+                            </div>
+                            <button className='flex items-center gap-3 text-sm my-5 cursor-pointer'> <BiCopy size={18} /> Copy anyware to copy</button>
+                        </div>
+                        }
+                    </div>
                     <div className='flex items-center justify-between'>
                         <h1 className='text-3xl font-extrabold'>Solana Wallet</h1>
                         <div className='flex items-center gap-2'>
@@ -141,9 +167,10 @@ const Wallet = () => {
                                 ? "grid grid-cols-1 md:grid-cols-2 gap-8"
                                 : "flex flex-col gap-8"
                         }>
-                            {wallets.map((wallet,i ) => (
+                            {wallets.map((wallet, i) => (
                                 <WalletCard
-                                    name={`Wallet ${i+1}`}
+                                    key={i}
+                                    name={`Wallet ${i + 1}`}
                                     publicKey={wallet.publicKey}
                                     privateKey={wallet.privateKey}
                                     collapsed={collapsed}
