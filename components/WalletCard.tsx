@@ -1,32 +1,63 @@
-"use client"
-import React, { useRef } from 'react'
+"use client";
 
-const WalletCard = ({wallet} : {wallet : any}) => {
-    const privateKeyRef = useRef([])
+import { Eye, Trash2 } from "lucide-react";
+import { useState } from "react";
 
-    const viewPrivateKey = () => {
-        privateKeyRef.current.type = privateKeyRef.current.type == "text" ? "password" : "text"
-        
-    }
-
-  return (
-    <div className='p-3 border border-gray-500/40 rounded-xl'>
-        <div className='flex items-center justify-between'>
-            <h1 className='text-xl font-semibold '>Wallet {wallet.name}</h1>
-            <button>Delete</button>
-        </div>
-        <div className='mt-3 space-y-1'>
-            <div>
-                <h1 className='text-gray-500 font-medium'>Public Key : </h1>
-                <button>{wallet.publicKey}</button>
-            </div>
-            <div className=''>
-                <h1 className='text-gray-500 font-medium'>Private Key : </h1>
-                <div className='flex'><input ref={privateKeyRef} type="password" disabled value={wallet.privateKey} className='flex-1 cursor-pointer' /> <button onClick={viewPrivateKey} className='cursor-pointer'>eye</button></div>
-            </div>
-        </div>
-    </div>
-  )
+interface WalletCardProps {
+    name: string;
+    publicKey: string;
+    collapsed: boolean;
+    privateKey: string;
+    handleDelete : () => void
 }
 
-export default WalletCard
+export default function WalletCard({
+    name,
+    publicKey,
+    collapsed,
+    privateKey,
+    handleDelete,
+}: WalletCardProps) {
+    const [showPrivate, setShowPrivate] = useState(false);
+
+    return (
+        <div className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-semibold text-white">Wallet {name}</h2>
+                <button  onClick={handleDelete} className="text-red-500 hover:text-red-400 transition p-2 rounded-lg hover:bg-[#141414] cursor-pointer">
+                    <Trash2 size={18} />
+                </button>
+            </div>
+
+
+            <div className="rounded-xl bg-[#141414] p-5">
+                {/* Public Key */}
+                <p className=" text-white/60 mb-1">Public Key</p>
+                <p className="text-white text-sm break-all">
+                    {publicKey}
+                </p>
+
+                {/* Private Key */}
+                <div className="mt-6">
+                    <p className="text-sm text-white/60 mb-2">Private Key</p>
+
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 text-white tracking-widest cursor-pointer" onClick={() => window.navigator.clipboard.writeText(privateKey)}>
+                            {showPrivate
+                                ? collapsed ? privateKey.slice(0, 32) + "....." : privateKey
+                                : "• • • • • • • • • • • • • • • • • • • • •"}
+                        </div>
+
+                        <button
+                            onClick={() => setShowPrivate(!showPrivate)}
+                            className="text-white/60 hover:text-white transition p-2 rounded-lg hover:bg-[#0f0f0f] cursor-pointer"
+                        >
+                            <Eye size={18} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
