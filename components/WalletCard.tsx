@@ -21,7 +21,7 @@ export default function WalletCard({
     const [showPrivate, setShowPrivate] = useState(false);
 
     return (
-        <div className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
+        <div key={name} className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-semibold text-white">Wallet {name}</h2>
