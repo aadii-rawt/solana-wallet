@@ -7,9 +7,10 @@ import AddWallet from './AddWallet';
 import * as bip39 from "bip39";
 import { derivePath } from 'ed25519-hd-key';
 import nacl from 'tweetnacl';
-import { toast } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import { BiCopy } from 'react-icons/bi';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { Grid, Rows } from 'lucide-react';
 
 type WalletType = {
     id: string,
@@ -181,6 +182,9 @@ const Wallet = () => {
                     </div>
                 </div> :
                 <AddWallet addWallet={generateWallet} mnemonicsInput={mnemonicsInput} setMnemonicsInput={setMnemonicsInput} />}
+
+        <Toaster />
+
         </div>
     )
 }
