@@ -21,10 +21,10 @@ export default function WalletCard({
     const [showPrivate, setShowPrivate] = useState(false);
 
     return (
-        <div key={name} className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
+        <div key={publicKey} className="relative rounded-2xl border border-white/10 bg-gradient-to-b from-[#0f0f0f] to-[#0a0a0a] p-6 shadow-lg">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-semibold text-white">Wallet {name}</h2>
+                <h2 className="text-2xl font-semibold text-white">{name} </h2>
                 <button  onClick={handleDelete} className="text-red-500 hover:text-red-400 transition p-2 rounded-lg hover:bg-[#141414] cursor-pointer">
                     <Trash2 size={18} />
                 </button>

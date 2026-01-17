@@ -141,10 +141,9 @@ const Wallet = () => {
                                 ? "grid grid-cols-1 md:grid-cols-2 gap-8"
                                 : "flex flex-col gap-8"
                         }>
-                            {wallets.map((wallet) => (
+                            {wallets.map((wallet,i ) => (
                                 <WalletCard
-                                    key={wallet.name}
-                                    name={wallet.name}
+                                    name={`Wallet ${i+1}`}
                                     publicKey={wallet.publicKey}
                                     privateKey={wallet.privateKey}
                                     collapsed={collapsed}
