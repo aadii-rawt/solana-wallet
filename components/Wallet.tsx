@@ -30,13 +30,11 @@ const Wallet = () => {
     useEffect(() => {
         const storedWallets = localStorage.getItem("wallets");
         const storedMnemonic = localStorage.getItem("mnemonics");
-
         if (storedWallets && storedMnemonic) {
             setMnemonics(JSON.parse(storedMnemonic));
             setWallets(JSON.parse(storedWallets));
         }
     }, []);
-
 
     const handleDelete = (id: string) => {
         const newWallet = wallets.filter((w) => w.id != id)

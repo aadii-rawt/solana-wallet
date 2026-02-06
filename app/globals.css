@@ -123,3 +123,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.bg-primary{
+  background-color:  "#44444E";
+}
