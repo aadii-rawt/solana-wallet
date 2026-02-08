@@ -12,7 +12,7 @@ import { FiCopy } from "react-icons/fi";
 
 export default function ReceiveAddress() {
   const { wallet } = useUser()
-  const qrRef = useRef()
+  const qrRef = useRef(null)
   useEffect(() => {
     if (!wallet?.publicKey || !qrRef.current) return;
 
