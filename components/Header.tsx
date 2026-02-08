@@ -15,7 +15,6 @@ const Header = () => {
   
   return (
     <div className='py-2.5 h-16 flex  items-center justify-between border-b border-gray-200/20 px-4'>
-
       <div className='flex items-center gap-2 cursor-pointer' onClick={() => setHeaderDrawer(true)}>
         <div className='w-9 h-9 flex items-center justify-center rounded-full bg-[#3B3B3F] font-bold text-lg cursor-pointer'><span>W</span></div>
         <h1 className='font-semibold'>{selectedWallet?.name}</h1>
@@ -70,8 +69,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* Airdrop Button */}
-          <Link href="/airdrop"
+          {rpcURL == "https://api.devnet.solana.com" && <Link href="/airdrop"
             className="
           flex items-center gap-2
           rounded-xl
@@ -98,7 +96,7 @@ const Header = () => {
               />
             </svg>
             Airdrop
-          </Link>
+          </Link>}
         </div>
       </div>
     </div>

@@ -16,28 +16,14 @@ import bs58 from "bs58"
 export default function Home() {
 
   const router = useRouter()
-  const { wallet ,connection} = useUser()
-  const [balance, setBalance] = useState<number>(0);
-
-  const { rpcURL } = useUser();
-
-  useEffect(() => {
-    const getBalance = async () => {     
-      const accountInfo =  await connection.getAccountInfo(new PublicKey(bs58.decode(wallet?.publicKey)));
-      setBalance(accountInfo.lamports / LAMPORTS_PER_SOL)
-    }
-
-    getBalance()
-  }, [wallet])
-  
-
+  const { wallet, balance } = useUser()
   return (
     <div className="relative w-full">
 
       <div className="flex items-center justify-center my-10">
         <div className="flex items-center gap-5">
           <img className="w-8" src="https://brandlogos.net/wp-content/uploads/2025/10/solana-logo_brandlogos.net_0evmb-512x446.png" alt="" />
-          <h1 className="text-4xl font-extrabold">{balance.toFixed(2)}  <span className="text-sm text-gray-400 font-normal">SOL</span></h1>
+          <h1 className="text-4xl font-extrabold">{balance?.toFixed(2)}  <span className="text-sm text-gray-400 font-normal">SOL</span></h1>
         </div>
       </div>
       <div className="flex items-center justify-between gap-5 py-5">

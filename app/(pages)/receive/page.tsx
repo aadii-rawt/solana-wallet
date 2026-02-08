@@ -33,13 +33,7 @@ export default function ReceiveAddress() {
 
   return (
     <div className="h-[calc(100vh-80px)] text-white flex flex-col items-center px-6 py-6">
-      {/* Header */}
-      <div className="w-full flex items-center gap-4 mb-8">
-        <button className="text-white/70 text-2xl">
-
-        </button>
-        <h1 className="text-xl font-semibold">Receive Address</h1>
-      </div>
+    
 
       <div className="bg-white p-1 rounded-lg relative">
         <div ref={qrRef}></div>
