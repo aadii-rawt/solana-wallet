@@ -1,11 +1,17 @@
 "use client"
 import useUser from "@/context/UserContext"
+import { Connection } from "@solana/web3.js"
 import Link from "next/link"
 import { useState } from "react"
 
 const Header = () => {
   const { setHeaderDrawer, selectedWallet } = useUser()
   const { rpcURL, setrpcURL } = useUser()
+  const {setConnection} = useUser()
+
+  const handleRPC = (url : string) => {
+    setConnection(new Connection(url,"confirmed"))
+  }
   
   return (
     <div className='py-2.5 h-16 flex  items-center justify-between border-b border-gray-200/20 px-4'>
@@ -21,7 +27,9 @@ const Header = () => {
           <div className="relative">
             <select
               value={rpcURL}
-              onChange={(e) => setrpcURL(e.target.value)}
+              onChange={(e) => { setrpcURL(e.target.value)
+                handleRPC(e.target.value)
+              }}
               className="
             appearance-none
             rounded-xl

@@ -5,7 +5,7 @@ import * as bip39 from "bip39";
 import { toast } from "sonner";
 import { derivePath } from "ed25519-hd-key";
 import nacl from "tweetnacl";
-import { Keypair } from "@solana/web3.js";
+import { Connection, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import { walletType } from "@/types/types";
 
@@ -13,15 +13,17 @@ import { walletType } from "@/types/types";
 
 interface ContextType {
     wallet: any,
-    currentWallet : walletType,
-    setCurrentWallet : Dispatch<SetStateAction<walletType>>,
+    currentWallet: walletType,
+    setCurrentWallet: Dispatch<SetStateAction<walletType>>,
     generateWallet: () => void,
     selectedWallet: any,
     headerDrawer: boolean,
     setHeaderDrawer: Dispatch<SetStateAction<boolean>>,
     addWallet: () => void,
-    rpcURL : string,
-    setrpcURL : Dispatch<SetStateAction<string>>,
+    rpcURL: string,
+    setrpcURL: Dispatch<SetStateAction<string>>,
+    connection: any,
+    setConnection : any,
 
 }
 const userContext = createContext<ContextType>(null)
@@ -32,7 +34,9 @@ export const UserProvider = ({ children }) => {
     const [currentWallet, setCurrentWallet] = useState<walletType>(null)
     const [headerDrawer, setHeaderDrawer] = useState(false)
     const [mnemonics, setMnemonics] = useState<string[]>(Array(12).fill(""))
-    const [rpcURL,setrpcURL] = useState<string>("https://api.devnet.solana.com") // mainnet url https://api.mainnet.solana.com and devnet url  https://api.devnet.solana.com
+    const [rpcURL, setrpcURL] = useState<string>("https://api.devnet.solana.com") // mainnet url https://api.mainnet.solana.com and devnet url  https://api.devnet.solana.com
+    // const connection =  new Connection("https://api.devnet.solana.com")
+    const [ connection, setConnection ] = useState(new Connection("https://api.devnet.solana.com","confirmed"))
 
     useEffect(() => {
         const storedWallets = localStorage.getItem("wallets");
@@ -42,9 +46,7 @@ export const UserProvider = ({ children }) => {
             setMnemonics(JSON.parse(storedMnemonic));
             setWallet(JSON.parse(storedWallets));
         }
-
-    }, []);
-
+}, []);
 
     const generateWallet = () => {
         let mnemonics = bip39.generateMnemonic()
@@ -74,13 +76,14 @@ export const UserProvider = ({ children }) => {
             const { secretKey } = nacl.sign.keyPair.fromSeed(derivedSeed);
             const keypair = Keypair.fromSecretKey(secretKey);
 
-            const privateKeyEncoded = bs58.encode(secretKey)
-            const publicKeyEncoded = keypair.publicKey.toBase58()
+            const privateKey = bs58.encode(secretKey)
+            const publicKey = keypair.publicKey.toBase58()
+            
 
             return {
                 id: crypto.randomUUID(),
-                privateKey: privateKeyEncoded,
-                publicKey: publicKeyEncoded,
+                privateKey ,
+                publicKey ,
                 mnemonics,
                 path,
             }
@@ -111,10 +114,11 @@ export const UserProvider = ({ children }) => {
 
     return <userContext.Provider value={{
         wallet,
-        currentWallet,setCurrentWallet,
+        currentWallet, setCurrentWallet,
         generateWallet, addWallet,
         headerDrawer, setHeaderDrawer,
-        rpcURL,setrpcURL
+        rpcURL, setrpcURL,
+        connection,setConnection
     }}>
         {children}
     </userContext.Provider>

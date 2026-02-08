@@ -10,51 +10,38 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { VscArrowSwap } from "react-icons/vsc";
 import { BsCurrencyDollar } from "react-icons/bs";
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import bs58 from "bs58"
 
 export default function Home() {
 
   const router = useRouter()
-  const { wallet } = useUser()
+  const { wallet ,connection} = useUser()
   const [balance, setBalance] = useState<number>(0);
 
   const { rpcURL } = useUser();
+
   useEffect(() => {
-    const getBalance = async () => {
-      try {
-        const { data } = await axios.post(rpcURL,
-          {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getBalance",
-            "params": [
-              wallet.publicKey,
-              {
-                "commitment": "finalized"
-              }
-            ]
-          })
-        setBalance(data.result.value / 1_000_000_000)
-
-      } catch (error) {
-        console.log(error);
-
-      }
+    const getBalance = async () => {     
+      const accountInfo =  await connection.getAccountInfo(new PublicKey(bs58.decode(wallet?.publicKey)));
+      setBalance(accountInfo.lamports / LAMPORTS_PER_SOL)
     }
 
     getBalance()
   }, [wallet])
+  
 
   return (
     <div className="relative w-full">
 
       <div className="flex items-center justify-center my-10">
         <div className="flex items-center gap-5">
-          <img  className="w-8" src="https://brandlogos.net/wp-content/uploads/2025/10/solana-logo_brandlogos.net_0evmb-512x446.png" alt="" />
-        <h1 className="text-4xl font-extrabold">{balance.toFixed(2)}  <span className="text-sm text-gray-400 font-normal">SOL</span></h1>
+          <img className="w-8" src="https://brandlogos.net/wp-content/uploads/2025/10/solana-logo_brandlogos.net_0evmb-512x446.png" alt="" />
+          <h1 className="text-4xl font-extrabold">{balance.toFixed(2)}  <span className="text-sm text-gray-400 font-normal">SOL</span></h1>
         </div>
       </div>
       <div className="flex items-center justify-between gap-5 py-5">
-        <ActionButton icon={<TbSend />} label="Send" />
+        <ActionButton icon={<TbSend />} label="Send" handleclick={() => router.push("send")} />
         <ActionButton icon={<IoQrCodeOutline />} label="Receive" handleclick={() => router.push("receive")} />
         <ActionButton icon={<VscArrowSwap />} label="Swap" />
         <ActionButton icon={<BsCurrencyDollar />} label="Buy" />
